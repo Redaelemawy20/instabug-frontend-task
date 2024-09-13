@@ -19,7 +19,7 @@
         />
       </ul>
     </div>
-    <button>Rating overtime</button>
+    <RatingOverTimeButton />
   </div>
 </template>
 
@@ -27,6 +27,7 @@
 import RatingHeader from "./rating-header.vue";
 import RatingBand from "./rating-band.vue";
 import { createNamespacedHelpers } from "vuex";
+import RatingOverTimeButton from "./rating-overtime.vue";
 const { mapState } = createNamespacedHelpers("reviews");
 
 export default {
@@ -34,6 +35,7 @@ export default {
   components: {
     RatingHeader,
     RatingBand,
+    RatingOverTimeButton,
   },
   data() {
     return {
@@ -193,23 +195,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.overall_wrapper button {
-  background-color: var(--blue);
-  color: #fff;
-  width: 193px;
-  height: 62px;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 20px;
-  font-weight: 500;
-  border-color: transparent;
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  margin-top: 40px;
-}
-</style>

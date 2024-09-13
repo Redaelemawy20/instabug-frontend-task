@@ -1,11 +1,26 @@
 <template>
-  <div class="c-chart__container">
+  <div v-if="error">
+    <Error />
+  </div>
+  <div v-else-if="isloading">
+    <h2>loading...</h2>
+  </div>
+  <div class="c-chart__container" v-else>
+    <label for="start-date">Start Date:</label>
+    <input
+      type="date"
+      v-model="startDate"
+      id="start-date"
+      @change="filterData"
+    />
+
+    <label for="end-date">End Date:</label>
+    <input type="date" v-model="endDate" id="end-date" @change="filterData" />
     <v-chart ref="chart" :option="chartOptions" />
   </div>
 </template>
 
 <script>
-import moment from "moment";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { LineChart } from "echarts/charts";
@@ -16,7 +31,7 @@ import {
   VisualMapComponent,
 } from "echarts/components";
 import VChart from "vue-echarts";
-
+import Error from "./error.vue";
 use([
   CanvasRenderer,
   LineChart,
@@ -31,40 +46,22 @@ export default {
 
   components: {
     VChart,
+    Error,
   },
-
+  created() {
+    this.fetchData();
+  },
+  mounted() {
+    this.filterData();
+  },
   data() {
     return {
-      chartData: [
-        {
-          date_ms: 1641772800000,
-          value: 4.2,
-        },
-        {
-          date_ms: 1641859200000,
-          value: 3.33,
-        },
-        {
-          date_ms: 1641945600000,
-          value: 3.93,
-        },
-        {
-          date_ms: 1642032000000,
-          value: 4.31,
-        },
-        {
-          date_ms: 1642118400000,
-          value: 5,
-        },
-        {
-          date_ms: 1642204800000,
-          value: 2.88,
-        },
-        {
-          date_ms: 1642291200000,
-          value: 3.7,
-        },
-      ],
+      startDate: null,
+      endDate: null,
+      chartData: [],
+      filteredData: [],
+      isloading: false,
+      error: false,
     };
   },
 
@@ -79,12 +76,12 @@ export default {
     chartOptions() {
       return {
         title: {
-          left: 'center',
-          top: 'bottom',
-          text: 'Reviews Overtime'
+          left: "center",
+          top: "bottom",
+          text: "Reviews Overtime",
         },
         tooltip: {
-          trigger: 'axis',
+          trigger: "axis",
           transitionDuration: 0,
           confine: false,
           hideDelay: 0,
@@ -165,17 +162,59 @@ export default {
     },
 
     xAxisData() {
-      return this.chartData.map((item) => this.formatDate(item.date_ms));
+      return this.filteredData.map((item) => this.formatDate(item.date_ms));
     },
 
     yAxisData() {
-      return this.chartData.map((item) => item.value);
+      return this.filteredData.map((item) => item.value);
     },
   },
 
   methods: {
     formatDate(dateInMs) {
-      return moment(dateInMs).format("DD MMM YYYY");
+      const date = new Date(dateInMs);
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    },
+    toISOString(date_ms) {
+      return date_ms.toISOString().substr(0, 10);
+    },
+
+    fetchData() {
+      this.isloading = true;
+      fetch("https/frontend-task.instabug-dev.com/api/web/reviews_overall")
+        .then((res) =>
+          res.json().then(({ data }) => {
+            this.chartData = data;
+            this.filteredData = data;
+            this.isloading = false;
+            const firstItem = data[0];
+            const lastItem = data[data.length - 1];
+            if (firstItem) this.startDate = this.toISOString(firstItem.date_ms);
+            if (lastItem) this.endDate = this.toISOString(lastItem.date_ms);
+          })
+        )
+        .catch((e) => {
+          this.error = true;
+          this.isloading = false;
+        });
+    },
+    filterData() {
+      if (this.startDate && this.endDate) {
+        const startTimestamp = new Date(this.startDate).getTime();
+        const endTimestamp = new Date(this.endDate).getTime();
+
+        // Filter the data points based on the selected date range
+        this.filteredData = this.chartData.filter((item) => {
+          return item.date_ms >= startTimestamp && item.date_ms <= endTimestamp;
+        });
+      } else {
+        // If no date range is selected, show all data
+        this.filteredData = this.chartData;
+      }
     },
   },
 };
