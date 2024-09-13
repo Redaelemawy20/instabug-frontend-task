@@ -6,14 +6,24 @@
     <!-- virtual scroller  -->
     <RecycleScroller
       class="scroller"
-      :items="reviews"
-      :item-size="10"
+      :items="items"
+      :item-size="5"
       v-slot="{ item, index }"
       key-field="id"
+      v-if="isSearching !== 'searching'"
     >
       <Review :key="item.id" :review="item" />
-      <ReviewSkeleton v-if="index == reviews.length - 1 && hasNext" />
+      <ReviewSkeleton
+        v-if="
+          index == items.length - 1 && hasNext && isSearching !== 'searching'
+        "
+      />
     </RecycleScroller>
+    <!-- if searching -->
+    <div v-if="isSearching === 'searching'">
+      <Review v-for="item in items" :key="item.id" :review="item" />
+      <NoReviews v-if="items.length === 0" />
+    </div>
   </div>
 </template>
 
@@ -28,27 +38,34 @@ import ReviewSkeleton from "./review-item/review-skeleton.vue";
 import { GET_REVIEWS } from "../store/utils/action-types";
 import { debounce } from "../utils/debounce";
 import IntialLoad from "./intial-load.vue";
+import NoReviews from "./no-reviews.vue";
 export default {
   name: "ReviewsList",
   components: {
     Review,
     ReviewSkeleton,
     IntialLoad,
+    NoReviews,
   },
   data() {
     return {
-      reviews: [],
+      items: [],
     };
   },
   mounted() {
     this.debouncedScrollHandler = debounce(this.handleScroll, 200);
-    this.$refs.reviewsListContainer.addEventListener(
-      "scroll",
-      this.debouncedScrollHandler
-    );
+    this.registerScrollListner();
   },
   computed: {
-    ...mapState(["recentReviews", "hasNext", "isLoading", "currentPage"]),
+    ...mapState([
+      "reviews",
+      "recentReviews",
+      "filteredReviews",
+      "hasNext",
+      "isLoading",
+      "currentPage",
+      "isSearching",
+    ]),
     intialLoad() {
       return this.isLoading && this.currentPage == 1;
     },
@@ -56,7 +73,21 @@ export default {
   watch: {
     recentReviews(newReviews) {
       if (newReviews && newReviews.length) {
-        this.reviews.push(...newReviews);
+        this.items.push(...newReviews);
+      }
+    },
+    isSearching(status) {
+      if (status === "searching") {
+        this.items = [];
+        this.unRegisterScrollListner();
+      } else if (status == "reset") {
+        this.items = this.reviews;
+        this.registerScrollListner();
+      }
+    },
+    filteredReviews(newReviews) {
+      if (this.isSearching == "searching") {
+        this.items = newReviews;
       }
     },
   },
@@ -64,6 +95,18 @@ export default {
     ...mapActions({
       getReviews: GET_REVIEWS,
     }),
+    registerScrollListner() {
+      this.$refs.reviewsListContainer.addEventListener(
+        "scroll",
+        this.debouncedScrollHandler
+      );
+    },
+    unRegisterScrollListner() {
+      this.$refs.reviewsListContainer.removeEventListener(
+        "scroll",
+        this.debouncedScrollHandler
+      );
+    },
     handleScroll(event) {
       const container = event.target;
       const scrollTop = container.scrollTop;
@@ -74,25 +117,23 @@ export default {
       }
     },
     getMoreReviews() {
-      if (!this.isLoading && this.hasNext) this.getReviews();
+      if (!this.isLoading && this.hasNext && this.isSearching !== "searching")
+        this.getReviews();
     },
   },
   created() {
     this.getReviews();
   },
   beforeDestroy() {
-    this.$refs.reviewsListContainer.removeEventListener(
-      "scroll",
-      this.debouncedScrollHandler
-    );
+    this.unRegisterScrollListner();
   },
 };
 </script>
 
 <style scoped>
 .clients_reviews {
-  overflow-y: scroll;
-  height: 550px;
+  overflow-y: auto;
+  height: 500px;
   width: 100%;
   will-change: transform;
 }

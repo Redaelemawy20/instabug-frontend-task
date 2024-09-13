@@ -1,15 +1,21 @@
 <template>
   <div class="overall_wrapper">
-    <RatingHeader :rate="overAllRating" :reviews_number="totalReviews" />
+    <RatingHeader
+      :rate="current.overAllRating"
+      :reviews_number="current.totalReviews"
+    />
     <div class="rating_details">
       <ul class="list-unstyled">
-        <RatingBand band="excellent" :percentage="percentages.excellent" />
-        <RatingBand band="good" :percentage="percentages.good" />
-        <RatingBand band="fair" :percentage="percentages.fair" />
-        <RatingBand band="poor" :percentage="percentages.poor" />
+        <RatingBand
+          band="excellent"
+          :percentage="current.percentages.excellent"
+        />
+        <RatingBand band="good" :percentage="current.percentages.good" />
+        <RatingBand band="fair" :percentage="current.percentages.fair" />
+        <RatingBand band="poor" :percentage="current.percentages.poor" />
         <RatingBand
           band="unacceptable"
-          :percentage="percentages.unacceptable"
+          :percentage="current.percentages.unacceptable"
         />
       </ul>
     </div>
@@ -31,40 +37,66 @@ export default {
   },
   data() {
     return {
-      totalReviews: 0,
-      overAllRating: 0,
-      summary: this.getInitialSummary(),
-      percentages: this.getInitialSummary(),
+      current: {
+        totalReviews: 0,
+        overAllRating: 0,
+        summary: this.getInitialSummary(),
+        percentages: this.getInitialSummary(),
+      },
+      beforeFilters: {},
     };
   },
   computed: {
-    ...mapState(["recentReviews", "isError"]),
+    ...mapState(["recentReviews", "isError", "isSearching", "filteredReviews"]),
   },
   watch: {
     recentReviews(newReviews) {
       if (newReviews && newReviews.length) {
-        this.totalReviews += newReviews.length;
-        this.calculateSummary();
-        this.calculateOverAllRating();
-        this.calculatePercentages();
+        this.onReviewsChanged(newReviews);
       }
     },
     isError(error) {
       if (error) this.reset();
     },
+    isSearching(status) {
+      if (status === "searching") {
+        this.saveCurrentState();
+      } else {
+        this.updateToPreviousState();
+      }
+    },
+    filteredReviews(newReviews) {
+      if (this.isSearching === "searching") {
+        this.reset();
+        this.onReviewsChanged(newReviews);
+      }
+    },
   },
   methods: {
+    onReviewsChanged(newReviews) {
+      this.current.totalReviews += newReviews.length;
+      this.calculateSummary(newReviews);
+      this.calculateOverAllRating();
+      this.calculatePercentages();
+    },
+    saveCurrentState() {
+      this.beforeFilters = { ...this.current };
+      this.reset();
+    },
+    updateToPreviousState() {
+      this.current = { ...this.beforeFilters };
+    },
     reset() {
-      this.overAllRating = 0;
-      this.totalReviews = 0;
-      this.summary = this.getInitialSummary();
-      this.percentages = this.getInitialSummary();
+      this.current.overAllRating = 0;
+      this.current.totalReviews = 0;
+      this.current.summary = this.getInitialSummary();
+      this.current.percentages = this.getInitialSummary();
     },
 
-    calculateSummary() {
-      const previousSummary = { ...this.summary };
-      const recentSummary = this.collectBandsRatings(this.recentReviews);
-      this.summary = {
+    calculateSummary(newReviews) {
+      const previousSummary = { ...this.current.summary };
+      const recentSummary = this.collectBandsRatings(newReviews);
+      this.current.summary = {
         excellent: previousSummary.excellent + recentSummary.excellent,
         good: previousSummary.good + recentSummary.good,
         fair: previousSummary.fair + recentSummary.fair,
@@ -73,14 +105,16 @@ export default {
       };
     },
     calculatePercentages() {
-      if (this.totalReviews === 0) return 0;
+      if (this.current.totalReviews === 0) return 0;
       // Calculate the exact percentage for each category without rounding
       const exactPercentages = {
-        excellent: (this.summary.excellent / this.totalReviews) * 100,
-        good: (this.summary.good / this.totalReviews) * 100,
-        fair: (this.summary.fair / this.totalReviews) * 100,
-        poor: (this.summary.poor / this.totalReviews) * 100,
-        unacceptable: (this.summary.unacceptable / this.totalReviews) * 100,
+        excellent:
+          (this.current.summary.excellent / this.current.totalReviews) * 100,
+        good: (this.current.summary.good / this.current.totalReviews) * 100,
+        fair: (this.current.summary.fair / this.current.totalReviews) * 100,
+        poor: (this.current.summary.poor / this.current.totalReviews) * 100,
+        unacceptable:
+          (this.current.summary.unacceptable / this.current.totalReviews) * 100,
       };
       // Round each percentage but keep track of the original fractional parts
       const roundedPercentages = {
@@ -99,7 +133,7 @@ export default {
       let difference = 100 - roundedTotal;
 
       if (difference === 0) {
-        this.percentages = roundedPercentages;
+        this.current.percentages = roundedPercentages;
         return;
       }
 
@@ -116,18 +150,18 @@ export default {
       for (let i = 0; i < difference; i++) {
         roundedPercentages[fractions[i].key]++;
       }
-      this.percentages = roundedPercentages;
+      this.current.percentages = roundedPercentages;
     },
     calculateOverAllRating() {
-      if (this.totalReviews === 0) return 0;
+      if (this.current.totalReviews === 0) return 0;
       const sumOfAllRatings =
-        this.summary.excellent * 5 +
-        this.summary.good * 4 +
-        this.summary.fair * 3 +
-        this.summary.poor * 2 +
-        this.summary.unacceptable * 1;
-      const overage = sumOfAllRatings / this.totalReviews;
-      this.overAllRating = Number(overage.toFixed(1));
+        this.current.summary.excellent * 5 +
+        this.current.summary.good * 4 +
+        this.current.summary.fair * 3 +
+        this.current.summary.poor * 2 +
+        this.current.summary.unacceptable * 1;
+      const overage = sumOfAllRatings / this.current.totalReviews;
+      this.current.overAllRating = Number(overage.toFixed(1));
     },
     collectBandsRatings(reviews) {
       const summaries = this.getInitialSummary();
