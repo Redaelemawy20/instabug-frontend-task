@@ -9,9 +9,13 @@
       aria-valuemin="0"
       aria-valuemax="100"
     >
-      <div class="progress-bar" style="width: 0"></div>
+      <div
+        class="progress-bar"
+        :class="colorCalss"
+        :style="{ width: percentage + '%' }"
+      ></div>
     </div>
-    <span class="percentage light_gray">{{ precentage }}</span>
+    <span class="percentage light_gray">{{ percentage }}%</span>
   </li>
 </template>
 
@@ -23,13 +27,27 @@ export default {
       type: String,
       required: true,
     },
-    precentage: {
-      type: String,
-      default: "0",
+    percentage: {
+      type: Number,
+      default: 0,
     },
-    color: {
-      type: String,
-      required: true,
+  },
+  computed: {
+    colorCalss() {
+      switch (this.band) {
+        case "excellent":
+          return "dark_green";
+        case "good":
+          return "light_green";
+        case "fair":
+          return "orange";
+        case "poor":
+          return "yellow";
+        case "unacceptable":
+          return "red";
+        default:
+          "light_gray";
+      }
     },
   },
 };
@@ -61,6 +79,7 @@ export default {
   white-space: nowrap;
   background-color: var(--bs-progress-bar-bg);
   transition: var(--bs-progress-bar-transition);
+  will-change: width;
 }
 li .title {
   flex-basis: 35%;

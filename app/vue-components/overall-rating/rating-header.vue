@@ -2,9 +2,9 @@
   <div class="head mb-4">
     <div class="title mb-2">Overall Rating</div>
     <div class="rating_wrapper d-flex align-items-center gap-2">
-      <span class="rate_count">0</span>
-      <Stars />
-      <span class="light_gray">Based on 0 reviews</span>
+      <span class="rate_count">{{ rate }}</span>
+      <Stars :rating="rate" />
+      <span class="light_gray">Based on {{ reviews_number }} reviews</span>
     </div>
   </div>
 </template>
