@@ -1,1 +1,86 @@
-{}
+{
+    "reviews": [
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "dante-lancaster",
+    "rating": 4,
+    "content": "A bit pricey, but the quality justifies the cost. Very comfortable.",
+    "created_at": "2024-04-22",
+    "user_avatar": null
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "jacques-griffith",
+    "rating": 5,
+    "content": "Excellent warmth and comfort, ideal for chilly autumn evenings.",
+    "created_at": "2024-02-14",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/staci-foreman.jpg"
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "keith-mcneil",
+    "rating": 4,
+    "content": "The texture and color of this knitwear make it a standout piece in my wardrobe.",
+    "created_at": "2024-03-15",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/janette-mckinney.jpg"
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "natali-craig",
+    "rating": 4,
+    "content": "The orange color is just as vibrant as advertised and adds a beautiful pop to my outfits. I've washed it a few times already, and the color hasn't faded one bit. Definitely a must-have in your closet!",
+    "created_at": "2024-04-11",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/clara-hendrix.jpg"
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "pat-barrett",
+    "rating": 5,
+    "content": "Love the warmth and style of this knitwear, perfect for fall weather.",
+    "created_at": "2024-04-21",
+    "user_avatar": null
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "sonja-fuentes",
+    "rating": 5,
+    "content": "So cozy and warm, the quality is top-notch. A great buy for the colder months.",
+    "created_at": "2024-03-14",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/lana-rosario.jpg"
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "tisha-foley",
+    "rating": 4,
+    "content": "Lovely sweater with a great fit and vibrant colors that don't fade.",
+    "created_at": "2024-02-15",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/keith-mcneil.jpg"
+    },
+    {
+    "product_id": "autumnal-knitwear",
+    "user_id": "tristan-howe",
+    "rating": 3,
+    "content": "Nice design but the material is a bit itchy on sensitive skin.",
+    "created_at": "2024-02-13",
+    "user_avatar": null
+    },
+    {
+    "product_id": "azure-attitude-shades",
+    "user_id": "murray-rivers",
+    "rating": 5,
+    "content": "Stylish and effective, these sunglasses really stand out.",
+    "created_at": "2024-05-05",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/sonja-fuentes.jpg"
+    },
+    {
+    "product_id": "azure-attitude-shades",
+    "user_id": "tatiana-moses",
+    "rating": 3,
+    "content": "Look great but feel a bit flimsy.",
+    "created_at": "2024-06-05",
+    "user_avatar": "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/e-commerce-track-images/user-avatars/elias-hull.jpg"
+    }
+    ],
+    "current_page": 1,
+    "has_next": true
+    }
