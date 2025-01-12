@@ -72,8 +72,8 @@ const mutations = {
     const [whereToFilter, searchKey] = update;
     const searchTerm = searchKey.toLowerCase();
     state.filteredReviews = searchKey === '' ? whereToFilter : whereToFilter.filter((review) => {
-      const name = review.user_id.toLowerCase();
-      const content = review.content.toLowerCase();
+      const name = review.user_id ? review.user_id.toLowerCase() : '';
+      const content = review.content ? review.content.toLowerCase() : '';
       return name.includes(searchTerm) || content.includes(searchTerm);
     });
     state.isSearching = 'searching';
