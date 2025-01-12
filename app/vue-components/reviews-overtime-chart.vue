@@ -180,12 +180,13 @@ export default {
       });
     },
     toISOString(date_ms) {
-      return date_ms.toISOString().substr(0, 10);
+      const date = new Date(date_ms);
+      return date.toISOString().substr(0, 10);
     },
 
     fetchData() {
       this.isloading = true;
-      fetch("https/frontend-task.instabug-dev.com/api/web/reviews_overall")
+      fetch("https://frontend-task.instabug-dev.com/api/web/reviews_overall")
         .then((res) =>
           res.json().then(({ data }) => {
             this.chartData = data;

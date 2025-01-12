@@ -1,7 +1,7 @@
 <template>
   <div class="user_header">
     <div :class="['avatar ', { 'has-image': avatar }]" :style="avatarStyle">
-      <img v-if="avatar" :src="avatar" alt="Profile Picture" />
+      <img v-if="avatar" :src="avatar" alt="Profile Picture" loading="lazy" />
       <span v-else class="avatar-text">{{ initials }}</span>
     </div>
     <div class="name">{{ name }}</div>
