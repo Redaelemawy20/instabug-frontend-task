@@ -23,7 +23,7 @@
 To run the project, use the following command:
 ```sh
 yarn start
-
+ ```
 ## Testing the Project
 
 To run tests with Cypress, use:
